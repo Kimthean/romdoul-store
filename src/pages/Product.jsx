@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Skeleton from "react-loading-skeleton";
 import { Link, useParams } from "react-router-dom";
-import Marquee from "react-fast-marquee";
 import { useDispatch } from "react-redux";
 import { addCart } from "../redux/action";
 
@@ -9,6 +8,7 @@ import { Footer, Navbar } from "../components";
 import { directus } from "../lib/directus";
 import { readItem, readItems } from "@directus/sdk";
 import getMedia from "../lib/getMedia";
+import ProductCard from "../components/ProductCard";
 
 const Product = () => {
   const { id } = useParams();
@@ -16,6 +16,7 @@ const Product = () => {
   const [similarProducts, setSimilarProducts] = useState([]);
   const [loading, setLoading] = useState(false);
   const [loading2, setLoading2] = useState(false);
+  const [isDescriptionExpanded, setDescriptionExpanded] = useState(false);
 
   const dispatch = useDispatch();
 
@@ -42,11 +43,9 @@ const Product = () => {
         })
       );
 
-      console.log(data);
       setProduct(data);
       setLoading(false);
 
-      // Fetch similar products from the same category
       const categoryId = data.category[0].category_id.id;
       const similarProductsData = await directus.request(
         readItems("products", {
@@ -57,18 +56,37 @@ const Product = () => {
               },
             },
             id: {
-              _neq: id, // Exclude the current product
+              _neq: id,
             },
           },
-          fields: ["*"],
+          fields: [
+            "*",
+            {
+              category: [
+                {
+                  category_id: ["*"],
+                },
+              ],
+            },
+          ],
         })
       );
-
+      console.log(similarProductsData);
       setSimilarProducts(similarProductsData);
       setLoading2(false);
     };
     getProduct();
   }, [id]);
+
+  const maxLength = 300;
+
+  const toggleDescription = () => {
+    setDescriptionExpanded(!isDescriptionExpanded);
+  };
+
+  const description = isDescriptionExpanded
+    ? product.description
+    : product?.description?.substring(0, maxLength) + "...";
 
   const Loading = () => {
     return (
@@ -117,7 +135,7 @@ const Product = () => {
                       .join(", ")
                   : "No categories available"}
               </p>
-              <h3 className="display-6  my-4">${product.price}</h3>
+              <h3 className="display-6 my-4">${product.price}</h3>
               <button
                 className="btn btn-outline-dark"
                 onClick={() => addProduct(product)}
@@ -128,9 +146,16 @@ const Product = () => {
                 Go to Cart
               </Link>
               <p
-                className="lead pt-4"
-                dangerouslySetInnerHTML={{ __html: product.description }}
+                dangerouslySetInnerHTML={{ __html: description }}
+                className="pt-4"
               ></p>
+              <button
+                onClick={toggleDescription}
+                type="button"
+                className="btn btn-light"
+              >
+                {isDescriptionExpanded ? "Show Less" : "Show More"}
+              </button>
             </div>
           </div>
         </div>
@@ -164,42 +189,15 @@ const Product = () => {
   const ShowSimilarProduct = () => {
     return (
       <>
-        <div className="py-4 my-4">
-          <div className="d-flex">
-            {similarProducts.map((item) => {
-              return (
-                <div key={item.id} className="card mx-4 text-center">
-                  <img
-                    className="card-img-top p-3"
-                    src={getMedia(item.image)}
-                    alt="Card"
-                    height={300}
-                    width={300}
-                  />
-                  <div className="card-body">
-                    <h5 className="card-title">
-                      {item.product_name.substring(0, 15)}...
-                    </h5>
-                  </div>
-                  <div className="card-body">
-                    <Link
-                      to={"/product/" + item.id}
-                      className="btn btn-dark m-1"
-                    >
-                      Buy Now
-                    </Link>
-                    <button
-                      className="btn btn-dark m-1"
-                      onClick={() => addProduct(item)}
-                    >
-                      Add to Cart
-                    </button>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
+        {similarProducts.map((product) => {
+          return (
+            <ProductCard
+              key={product.id}
+              product={product}
+              addToCart={addProduct}
+            />
+          );
+        })}
       </>
     );
   };
@@ -210,11 +208,11 @@ const Product = () => {
       <div className="container">
         <div className="row">{loading ? <Loading /> : <ShowProduct />}</div>
         <div className="row my-5 py-5">
-          <div className="d-none d-md-block">
-            <h2 className="">You may also Like</h2>
-            <Marquee pauseOnHover={true} pauseOnClick={true} speed={50}>
+          <div>
+            <h2>You may also Like</h2>
+            <div className="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 pt-4">
               {loading2 ? <Loading2 /> : <ShowSimilarProduct />}
-            </Marquee>
+            </div>
           </div>
         </div>
       </div>

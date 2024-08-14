@@ -6,9 +6,7 @@ import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import { directus } from "../lib/directus";
 import { readItems } from "@directus/sdk";
-
-import { Link } from "react-router-dom";
-import getMedia from "../lib/getMedia";
+import ProductCard from "./ProductCard";
 
 const Products = () => {
   const [data, setData] = useState([]);
@@ -122,50 +120,15 @@ const Products = () => {
           ))}
         </div>
 
-        {filter.map((product) => {
-          return (
-            <div
-              id={product.id}
+        <div className="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+          {filter.map((product) => (
+            <ProductCard
               key={product.id}
-              className="col-md-4 col-sm-6 col-xs-8 col-12 mb-4"
-            >
-              <div className="card text-center h-100" key={product.id}>
-                <img
-                  className="card-img-top img-fluid p-3"
-                  src={getMedia(product.image)}
-                  alt="Card"
-                  height={300}
-                />
-                <div className="card-body">
-                  <h5 className="card-title">{product.product_name}</h5>
-                </div>
-                <ul className="list-group list-group-flush">
-                  <li className="list-group-item lead">$ {product.price}</li>
-                  <li className="list-group-item">
-                    Categories:{" "}
-                    {product.category
-                      .map((cat) => cat.category_id.name)
-                      .join(", ")}
-                  </li>
-                </ul>
-                <div className="card-body">
-                  <Link
-                    to={"/product/" + product.id}
-                    className="btn btn-dark m-1"
-                  >
-                    Buy Now
-                  </Link>
-                  <button
-                    className="btn btn-dark m-1"
-                    onClick={() => addProduct(product)}
-                  >
-                    Add to Cart
-                  </button>
-                </div>
-              </div>
-            </div>
-          );
-        })}
+              product={product}
+              addToCart={addProduct}
+            />
+          ))}
+        </div>
       </>
     );
   };
