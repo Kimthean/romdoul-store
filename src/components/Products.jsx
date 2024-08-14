@@ -4,8 +4,11 @@ import { addCart } from "../redux/action";
 
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
+import { directus } from "../lib/directus";
+import { readItems } from "@directus/sdk";
 
 import { Link } from "react-router-dom";
+import getMedia from "../lib/getMedia";
 
 const Products = () => {
   const [data, setData] = useState([]);
@@ -20,21 +23,20 @@ const Products = () => {
   };
 
   useEffect(() => {
-    const getProducts = async () => {
+    const getProduct = async () => {
       setLoading(true);
-      const response = await fetch("https://fakestoreapi.com/products/");
+      const products = await directus.request(readItems("products"));
+      console.log(products);
       if (componentMounted) {
-        setData(await response.clone().json());
-        setFilter(await response.json());
+        setData(products);
+        setFilter(products);
         setLoading(false);
       }
-
       return () => {
         componentMounted = false;
       };
     };
-
-    getProducts();
+    getProduct();
   }, []);
 
   const Loading = () => {
@@ -105,7 +107,7 @@ const Products = () => {
           </button>
         </div>
 
-        {filter.map((product) => {
+        {data.map((product) => {
           return (
             <div
               id={product.id}
@@ -115,13 +117,13 @@ const Products = () => {
               <div className="card text-center h-100" key={product.id}>
                 <img
                   className="card-img-top p-3"
-                  src={product.image}
+                  src={getMedia(product.image)}
                   alt="Card"
                   height={300}
                 />
                 <div className="card-body">
                   <h5 className="card-title">
-                    {product.title.substring(0, 12)}...
+                    {product.product_name.substring(0, 12)}...
                   </h5>
                   <p className="card-text">
                     {product.description.substring(0, 90)}...
@@ -129,10 +131,9 @@ const Products = () => {
                 </div>
                 <ul className="list-group list-group-flush">
                   <li className="list-group-item lead">$ {product.price}</li>
-                  {/* <li className="list-group-item">Dapibus ac facilisis in</li>
-                    <li className="list-group-item">Vestibulum at eros</li> */}
                 </ul>
                 <div className="card-body">
+                  Categories: {product.category.join(", ")}
                   <Link
                     to={"/product/" + product.id}
                     className="btn btn-dark m-1"

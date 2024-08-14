@@ -5,11 +5,10 @@ import { useSelector } from "react-redux";
 const Navbar = () => {
   const state = useSelector((state) => state.handleCart);
   return (
-    <nav className="navbar navbar-expand-lg navbar-light bg-light py-3 sticky-top">
+    <nav className="navbar navbar-expand-lg navbar-light bg-light sticky-top">
       <div className="container">
-        <NavLink className="navbar-brand fw-bold fs-4 px-2" to="/">
-          {" "}
-          React Ecommerce
+        <NavLink className=" fw-bold fs-4" to="/">
+          <img src="/assets/logo.png" alt="logo" width={100} />
         </NavLink>
         <button
           className="navbar-toggler mx-2"
