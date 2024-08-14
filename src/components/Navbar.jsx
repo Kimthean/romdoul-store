@@ -5,10 +5,10 @@ import { useSelector } from "react-redux";
 const Navbar = () => {
   const state = useSelector((state) => state.handleCart);
   return (
-    <nav className="navbar navbar-expand-lg navbar-light bg-light sticky-top">
+    <nav className="navbar navbar-expand-md navbar-light bg-light sticky-top">
       <div className="container">
-        <NavLink className=" fw-bold fs-4" to="/">
-          <img src="/assets/logo.png" alt="logo" width={100} />
+        <NavLink className="navbar-brand fw-bold fs-4" to="/">
+          <img src="/assets/logo.png" alt="logo" width={100} /> Romdoul Shop
         </NavLink>
         <button
           className="navbar-toggler mx-2"
@@ -26,7 +26,7 @@ const Navbar = () => {
           <ul className="navbar-nav m-auto my-2 text-center">
             <li className="nav-item">
               <NavLink className="nav-link" to="/">
-                Home{" "}
+                Home
               </NavLink>
             </li>
             <li className="nav-item">

@@ -14,7 +14,7 @@ const Products = () => {
   const [data, setData] = useState([]);
   const [filter, setFilter] = useState(data);
   const [loading, setLoading] = useState(false);
-  let componentMounted = true;
+  const [categories, setCategories] = useState([]);
 
   const dispatch = useDispatch();
 
@@ -23,10 +23,24 @@ const Products = () => {
   };
 
   useEffect(() => {
+    let componentMounted = true;
+
     const getProduct = async () => {
       setLoading(true);
-      const products = await directus.request(readItems("products"));
-      console.log(products);
+      const products = await directus.request(
+        readItems("products", {
+          fields: [
+            "*",
+            {
+              category: [
+                {
+                  category_id: ["*"],
+                },
+              ],
+            },
+          ],
+        })
+      );
       if (componentMounted) {
         setData(products);
         setFilter(products);
@@ -36,7 +50,20 @@ const Products = () => {
         componentMounted = false;
       };
     };
+
+    const getCategories = async () => {
+      const categories = await directus.request(
+        readItems("category", {
+          fields: ["*"],
+        })
+      );
+      if (componentMounted) {
+        setCategories(categories);
+      }
+    };
+
     getProduct();
+    getCategories();
   }, []);
 
   const Loading = () => {
@@ -67,10 +94,13 @@ const Products = () => {
     );
   };
 
-  const filterProduct = (cat) => {
-    const updatedList = data.filter((item) => item.category === cat);
+  const filterProduct = (catName) => {
+    const updatedList = data.filter((item) =>
+      item.category.some((cat) => cat.category_id.name === catName)
+    );
     setFilter(updatedList);
   };
+
   const ShowProducts = () => {
     return (
       <>
@@ -81,33 +111,18 @@ const Products = () => {
           >
             All
           </button>
-          <button
-            className="btn btn-outline-dark btn-sm m-2"
-            onClick={() => filterProduct("men's clothing")}
-          >
-            Men's Clothing
-          </button>
-          <button
-            className="btn btn-outline-dark btn-sm m-2"
-            onClick={() => filterProduct("women's clothing")}
-          >
-            Women's Clothing
-          </button>
-          <button
-            className="btn btn-outline-dark btn-sm m-2"
-            onClick={() => filterProduct("jewelery")}
-          >
-            Jewelery
-          </button>
-          <button
-            className="btn btn-outline-dark btn-sm m-2"
-            onClick={() => filterProduct("electronics")}
-          >
-            Electronics
-          </button>
+          {categories.map((category) => (
+            <button
+              key={category.id}
+              className="btn btn-outline-dark btn-sm m-2"
+              onClick={() => filterProduct(category.name)}
+            >
+              {category.name}
+            </button>
+          ))}
         </div>
 
-        {data.map((product) => {
+        {filter.map((product) => {
           return (
             <div
               id={product.id}
@@ -116,24 +131,24 @@ const Products = () => {
             >
               <div className="card text-center h-100" key={product.id}>
                 <img
-                  className="card-img-top p-3"
+                  className="card-img-top img-fluid p-3"
                   src={getMedia(product.image)}
                   alt="Card"
                   height={300}
                 />
                 <div className="card-body">
-                  <h5 className="card-title">
-                    {product.product_name.substring(0, 12)}...
-                  </h5>
-                  <p className="card-text">
-                    {product.description.substring(0, 90)}...
-                  </p>
+                  <h5 className="card-title">{product.product_name}</h5>
                 </div>
                 <ul className="list-group list-group-flush">
                   <li className="list-group-item lead">$ {product.price}</li>
+                  <li className="list-group-item">
+                    Categories:{" "}
+                    {product.category
+                      .map((cat) => cat.category_id.name)
+                      .join(", ")}
+                  </li>
                 </ul>
                 <div className="card-body">
-                  Categories: {product.category.join(", ")}
                   <Link
                     to={"/product/" + product.id}
                     className="btn btn-dark m-1"
@@ -154,6 +169,7 @@ const Products = () => {
       </>
     );
   };
+
   return (
     <>
       <div className="container my-3 py-3">
