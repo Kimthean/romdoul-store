@@ -20,11 +20,6 @@
   transition: all 0.3s ease;
 }
 
-.product-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1) !important;
-}
-
 .image-container {
   position: relative;
   overflow: hidden;
@@ -33,10 +28,6 @@
 .card-img-top {
   object-fit: cover;
   transition: transform 0.3s ease;
-}
-
-.product-card:hover .card-img-top {
-  transform: scale(1.05);
 }
 
 .overlay {
@@ -53,39 +44,13 @@
   transition: opacity 0.3s ease;
 }
 
-.product-card:hover .overlay {
-  opacity: 1;
-}
-
-.quick-view {
-  transform: translateY(20px);
-  transition: transform 0.3s ease;
-}
-
-.product-card:hover .quick-view {
-  transform: translateY(0);
-}
-
-.price {
-  font-weight: bold;
-  font-size: 1.1rem;
-}
-
 .card {
   border: none;
   border-radius: 10px;
 }
 
-.card-title {
-  font-weight: 600;
-}
-
 .btn-outline-secondary {
   border-color: #ced4da;
-}
-
-.progress {
-  height: 5px;
 }
 
 .text-muted {

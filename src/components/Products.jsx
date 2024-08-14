@@ -1,23 +1,29 @@
 import React, { useState, useEffect } from "react";
-import { useDispatch } from "react-redux";
-import { addCart } from "../redux/action";
-
+import { useAtom } from "jotai";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import { directus } from "../lib/directus";
 import { readItems } from "@directus/sdk";
 import ProductCard from "./ProductCard";
+import { cartAtom } from "../lib/atom";
 
 const Products = () => {
   const [data, setData] = useState([]);
   const [filter, setFilter] = useState(data);
   const [loading, setLoading] = useState(false);
   const [categories, setCategories] = useState([]);
-
-  const dispatch = useDispatch();
+  const [, setCart] = useAtom(cartAtom);
 
   const addProduct = (product) => {
-    dispatch(addCart(product));
+    setCart((prevCart) => {
+      const existingItem = prevCart.find((item) => item.id === product.id);
+      if (existingItem) {
+        return prevCart.map((item) =>
+          item.id === product.id ? { ...item, qty: item.qty + 1 } : item
+        );
+      }
+      return [...prevCart, { ...product, qty: 1 }];
+    });
   };
 
   useEffect(() => {
@@ -67,26 +73,28 @@ const Products = () => {
   const Loading = () => {
     return (
       <>
-        <div className="col-12 py-5 text-center">
-          <Skeleton height={40} width={560} />
-        </div>
-        <div className="col-md-4 col-sm-6 col-xs-8 col-12 mb-4">
-          <Skeleton height={592} />
-        </div>
-        <div className="col-md-4 col-sm-6 col-xs-8 col-12 mb-4">
-          <Skeleton height={592} />
-        </div>
-        <div className="col-md-4 col-sm-6 col-xs-8 col-12 mb-4">
-          <Skeleton height={592} />
-        </div>
-        <div className="col-md-4 col-sm-6 col-xs-8 col-12 mb-4">
-          <Skeleton height={592} />
-        </div>
-        <div className="col-md-4 col-sm-6 col-xs-8 col-12 mb-4">
-          <Skeleton height={592} />
-        </div>
-        <div className="col-md-4 col-sm-6 col-xs-8 col-12 mb-4">
-          <Skeleton height={592} />
+        <div className="container">
+          <div className="row">
+            <div className="col-12">
+              <Skeleton height={40} width={200} className="mb-4" />
+            </div>
+          </div>
+          <div className="row mb-4">
+            <div className="col-12">
+              <div className="d-flex flex-wrap justify-content-center">
+                {[1, 2, 3, 4, 5].map((n) => (
+                  <Skeleton key={n} width={80} height={38} className="m-2" />
+                ))}
+              </div>
+            </div>
+          </div>
+          <div className="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+            {[1, 2, 3, 4, 5, 6].map((n) => (
+              <div key={n} className="col">
+                <Skeleton height={500} />
+              </div>
+            ))}
+          </div>
         </div>
       </>
     );
@@ -102,32 +110,42 @@ const Products = () => {
   const ShowProducts = () => {
     return (
       <>
-        <div className="buttons text-center py-5">
-          <button
-            className="btn btn-outline-dark btn-sm m-2"
-            onClick={() => setFilter(data)}
-          >
-            All
-          </button>
-          {categories.map((category) => (
-            <button
-              key={category.id}
-              className="btn btn-outline-dark btn-sm m-2"
-              onClick={() => filterProduct(category.name)}
-            >
-              {category.name}
-            </button>
-          ))}
-        </div>
-
-        <div className="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
-          {filter.map((product) => (
-            <ProductCard
-              key={product.id}
-              product={product}
-              addToCart={addProduct}
-            />
-          ))}
+        <div className="container">
+          <div className="row">
+            <div className="col-12">
+              <h2 className="mb-4">Latest Products</h2>
+            </div>
+          </div>
+          <div className="row mb-4">
+            <div className="col-12">
+              <div className="d-flex flex-wrap justify-content-center">
+                <button
+                  className="btn btn-outline-dark btn-sm m-2"
+                  onClick={() => setFilter(data)}
+                >
+                  All
+                </button>
+                {categories.map((category) => (
+                  <button
+                    key={category.id}
+                    className="btn btn-outline-dark btn-sm m-2"
+                    onClick={() => filterProduct(category.name)}
+                  >
+                    {category.name}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+          <div className="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+            {filter.map((product) => (
+              <ProductCard
+                key={product.id}
+                product={product}
+                addToCart={addProduct}
+              />
+            ))}
+          </div>
         </div>
       </>
     );
@@ -135,16 +153,8 @@ const Products = () => {
 
   return (
     <>
-      <div className="container my-3 py-3">
-        <div className="row">
-          <div className="col-12">
-            <h2 className="display-5 text-center">Latest Products</h2>
-            <hr />
-          </div>
-        </div>
-        <div className="row justify-content-center">
-          {loading ? <Loading /> : <ShowProducts />}
-        </div>
+      <div className="container my-5">
+        {loading ? <Loading /> : <ShowProducts />}
       </div>
     </>
   );

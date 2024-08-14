@@ -1,79 +1,82 @@
 import React from "react";
 import { Footer, Navbar } from "../components";
+
 const AboutPage = () => {
+  const participants = [
+    "John Doe",
+    "Jane Smith",
+    "Michael Johnson",
+    "Emily Brown",
+  ];
+
   return (
     <>
       <Navbar />
-      <div className="container my-3 py-3">
-        <h1 className="text-center">About Us</h1>
-        <hr />
-        <p className="lead text-center">
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Nostrum
-          facere doloremque veritatis odit similique sequi. Odit amet fuga nam
-          quam quasi facilis sed doloremque saepe sint perspiciatis explicabo
-          totam vero quas provident ipsam, veritatis nostrum velit quos
-          recusandae est mollitia esse fugit dolore laudantium. Ex vel explicabo
-          earum unde eligendi autem praesentium, doloremque distinctio nesciunt
-          porro tempore quis eaque labore voluptatibus ea necessitatibus
-          exercitationem tempora molestias. Ad consequuntur veniam sequi ullam
-          tempore vel tenetur soluta dolore sunt maxime aliquam corporis est,
-          quo saepe dolorem optio minus sint nemo totam dolorum! Reprehenderit
-          delectus expedita a alias nam recusandae illo debitis repellat libero,
-          quasi explicabo molestiae saepe, dolorem tempore itaque eveniet quam
-          dignissimos blanditiis excepturi harum numquam vel nihil? Ipsum
-        </p>
+      <div className="container my-5">
+        <h1 className="text-center mb-5">About Our E-Commerce Project</h1>
+        <div className="row justify-content-center">
+          <div className="col-md-8">
+            <div className="card shadow-sm">
+              <div className="card-body">
+                <h2 className="card-title text-center mb-4">
+                  UC E-Commerce Technology Course ITE403
+                </h2>
+                <p className="lead text-center mb-4">
+                  Welcome to our e-commerce platform, developed as part of the
+                  UC E-Commerce Technology course ITE403. This project showcases
+                  our understanding of modern web development techniques and
+                  e-commerce principles.
+                </p>
+                <p>
+                  Our goal is to create a functional and user-friendly online
+                  shopping experience, applying the concepts and technologies
+                  we've learned throughout the course. We've focused on
+                  implementing best practices in web design, user experience,
+                  and e-commerce functionality.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
 
-        <h2 className="text-center py-4">Our Products</h2>
-        <div className="row">
-          <div className="col-md-3 col-sm-6 mb-3 px-3">
-            <div className="card h-100">
-              <img
-                className="card-img-top img-fluid"
-                src="https://images.pexels.com/photos/298863/pexels-photo-298863.jpeg?auto=compress&cs=tinysrgb&w=600"
-                alt=""
-                height={160}
-              />
-              <div className="card-body">
-                <h5 className="card-title text-center">Mens's Clothing</h5>
+        <h2 className="text-center my-5">Meet Our Team</h2>
+        <div className="row justify-content-center">
+          {participants.map((participant, index) => (
+            <div key={index} className="col-md-3 col-sm-6 mb-4">
+              <div className="card h-100 shadow-sm">
+                <div className="card-body d-flex flex-column justify-content-center align-items-center">
+                  <h5 className="card-title text-center">{participant}</h5>
+                  <p className="card-text text-center text-muted">
+                    Project Participant
+                  </p>
+                </div>
               </div>
             </div>
-          </div>
-          <div className="col-md-3 col-sm-6 mb-3 px-3">
-            <div className="card h-100">
-              <img
-                className="card-img-top img-fluid"
-                src="https://images.pexels.com/photos/7679720/pexels-photo-7679720.jpeg?auto=compress&cs=tinysrgb&w=600"
-                alt=""
-                height={160}
-              />
+          ))}
+        </div>
+
+        <div className="row mt-5">
+          <div className="col">
+            <div className="card bg-light">
               <div className="card-body">
-                <h5 className="card-title text-center">Women's Clothing</h5>
-              </div>
-            </div>
-          </div>
-          <div className="col-md-3 col-sm-6 mb-3 px-3">
-            <div className="card h-100">
-              <img
-                className="card-img-top img-fluid"
-                src="https://images.pexels.com/photos/1927259/pexels-photo-1927259.jpeg?auto=compress&cs=tinysrgb&w=600"
-                alt=""
-                height={160}
-              />
-              <div className="card-body">
-                <h5 className="card-title text-center">Jewelery</h5>
-              </div>
-            </div>
-          </div>
-          <div className="col-md-3 col-sm-6 mb-3 px-3">
-            <div className="card h-100">
-              <img
-                className="card-img-top img-fluid"
-                src="https://images.pexels.com/photos/356056/pexels-photo-356056.jpeg?auto=compress&cs=tinysrgb&w=600"
-                alt=""
-                height={160}
-              />
-              <div className="card-body">
-                <h5 className="card-title text-center">Electronics</h5>
+                <h3 className="card-title text-center mb-4">
+                  Project Highlights
+                </h3>
+                <ul className="list-unstyled">
+                  <li className="mb-3">
+                    ✅ Responsive design for optimal viewing on all devices
+                  </li>
+                  <li className="mb-3">
+                    ✅ Implementation of modern React and Bootstrap technologies
+                  </li>
+                  <li className="mb-3">
+                    ✅ Focus on user experience and intuitive navigation
+                  </li>
+                  <li className="mb-3">
+                    ✅ Integration of e-commerce best practices
+                  </li>
+                  <li>✅ Emphasis on performance and scalability</li>
+                </ul>
               </div>
             </div>
           </div>

@@ -1,9 +1,10 @@
 import React from "react";
 import { NavLink } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useAtom } from "jotai";
+import { cartAtom } from "../lib/atom";
 
 const Navbar = () => {
-  const state = useSelector((state) => state.handleCart);
+  const cart = useAtom(cartAtom);
   return (
     <nav className="navbar navbar-expand-lg navbar-light bg-light sticky-top">
       <div className="container">
@@ -59,7 +60,8 @@ const Navbar = () => {
               <i className="fa fa-user-plus mr-1"></i> Register
             </NavLink>
             <NavLink to="/cart" className="btn btn-outline-dark m-2">
-              <i className="fa fa-cart-shopping mr-1"></i> Cart ({state.length}){" "}
+              <i className="fa fa-cart-shopping mr-1"></i> Cart (
+              {cart[0].length}){" "}
             </NavLink>
           </div>
         </div>

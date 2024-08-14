@@ -1,10 +1,11 @@
 import React, { useState } from "react";
 import { Footer, Navbar } from "../components";
-import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
+import { useAtom } from "jotai";
+import { cartAtom } from "../lib/atom";
 
 const Checkout = () => {
-  const state = useSelector((state) => state.handleCart);
+  const [cart] = useAtom(cartAtom);
   const [step, setStep] = useState(1);
 
   const EmptyCart = () => {
@@ -23,7 +24,7 @@ const Checkout = () => {
   };
 
   const ShowCheckout = () => {
-    const subtotal = state.reduce(
+    const subtotal = cart.reduce(
       (acc, item) => acc + parseFloat(item.price.replace(",", "")) * item.qty,
       0
     );
@@ -33,7 +34,7 @@ const Checkout = () => {
       <div className="card border-0 shadow-sm">
         <div className="card-body">
           <h5 className="card-title mb-4">Order Summary</h5>
-          {state.map((item) => (
+          {cart.map((item) => (
             <div key={item.id} className="d-flex justify-content-between mb-2">
               <span>
                 {item.product_name} (x{item.qty})
@@ -112,18 +113,30 @@ const Checkout = () => {
             <label htmlFor="country" className="form-label">
               Country
             </label>
-            <select className="form-select" id="country" required>
-              <option value="">Choose...</option>
-              <option>United States</option>
+            <select
+              className="form-select"
+              id="country"
+              required
+              defaultValue="Cambodia"
+            >
+              <option>Cambodia</option>
             </select>
           </div>
           <div className="col-md-4">
             <label htmlFor="state" className="form-label">
-              State
+              Province/City
             </label>
-            <select className="form-select" id="state" required>
+            <select
+              className="form-select"
+              id="state"
+              required
+              defaultValue="Phnom Penh"
+            >
               <option value="">Choose...</option>
-              <option>California</option>
+              <option>Phnom Penh</option>
+              <option>Siem Reap</option>
+              <option>Battambang</option>
+              <option>Kampong Cham</option>
             </select>
           </div>
           <div className="col-md-3">
@@ -202,7 +215,7 @@ const Checkout = () => {
                     </button>
                   )}
                   <button
-                    className="btn btn-primary"
+                    className="btn btn-dark"
                     onClick={() =>
                       step === 1 ? setStep(2) : alert("Order placed!")
                     }
@@ -242,7 +255,7 @@ const Checkout = () => {
           </span>
           <span className="text-muted">Confirmation</span>
         </div>
-        {state.length ? <ShowCheckout /> : <EmptyCart />}
+        {cart.length ? <ShowCheckout /> : <EmptyCart />}
       </div>
       <Footer />
     </>

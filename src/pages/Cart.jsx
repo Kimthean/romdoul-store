@@ -1,13 +1,12 @@
 import React from "react";
-import { useSelector, useDispatch } from "react-redux";
-import { addCart, delCart } from "../redux/action";
+import { useAtom } from "jotai";
 import { Link } from "react-router-dom";
 import getMedia from "../lib/getMedia";
 import { Navbar } from "../components";
+import { cartAtom } from "../lib/atom";
 
 const Cart = () => {
-  const state = useSelector((state) => state.handleCart);
-  const dispatch = useDispatch();
+  const [cart, setCart] = useAtom(cartAtom);
 
   const EmptyCart = () => (
     <div className="container py-5 text-center">
@@ -19,14 +18,30 @@ const Cart = () => {
   );
 
   const addItem = (product) => {
-    dispatch(addCart(product));
+    setCart((prevCart) => {
+      const existingItem = prevCart.find((item) => item.id === product.id);
+      if (existingItem) {
+        return prevCart.map((item) =>
+          item.id === product.id ? { ...item, qty: item.qty + 1 } : item
+        );
+      }
+      return [...prevCart, { ...product, qty: 1 }];
+    });
   };
 
   const removeItem = (product) => {
-    dispatch(delCart(product));
+    setCart((prevCart) => {
+      const existingItem = prevCart.find((item) => item.id === product.id);
+      if (existingItem.qty === 1) {
+        return prevCart.filter((item) => item.id !== product.id);
+      }
+      return prevCart.map((item) =>
+        item.id === product.id ? { ...item, qty: item.qty - 1 } : item
+      );
+    });
   };
 
-  const CartItem = ({ item }) => (
+  const CartItem = React.memo(({ item }) => (
     <div className="row mb-4 d-flex justify-content-between align-items-center">
       <div className="col-md-2 col-lg-2 col-xl-2">
         <img
@@ -59,15 +74,15 @@ const Cart = () => {
         </h6>
       </div>
     </div>
-  );
+  ));
 
   const ShowCart = () => {
-    const subtotal = state.reduce(
+    const subtotal = cart.reduce(
       (acc, item) => acc + parseFloat(item.price.replace(",", "")) * item.qty,
       0
     );
     const shipping = 30.0;
-    const totalItems = state.reduce((acc, item) => acc + item.qty, 0);
+    const totalItems = cart.reduce((acc, item) => acc + item.qty, 0);
 
     return (
       <div className="container py-5">
@@ -78,7 +93,7 @@ const Cart = () => {
                 <h5 className="mb-0">Cart - {totalItems} items</h5>
               </div>
               <div className="card-body">
-                {state.map((item) => (
+                {cart.map((item) => (
                   <CartItem key={item.id} item={item} />
                 ))}
               </div>
@@ -126,7 +141,7 @@ const Cart = () => {
       </div>
       <div className="container-fluid my-3 py-3">
         <h1 className="text-center mb-4">Shopping Cart</h1>
-        {state.length > 0 ? <ShowCart /> : <EmptyCart />}
+        {cart.length > 0 ? <ShowCart /> : <EmptyCart />}
       </div>
     </>
   );
