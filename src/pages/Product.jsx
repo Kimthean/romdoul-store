@@ -93,10 +93,10 @@ const Product = () => {
               />
             </div>
             <div className="col-md-6 col-md-6 py-5">
-              <h4 className="text-uppercase text-muted">
+              {/* <h4 className="text-uppercase text-muted">
                 Categories:{" "}
                 {product.category.map((cat) => cat.category_id.name).join(", ")}
-              </h4>
+              </h4> */}
               <h1 className="display-5">{product.product_name}</h1>
               <h3 className="display-6  my-4">${product.price}</h3>
               <button
