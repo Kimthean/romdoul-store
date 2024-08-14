@@ -7,7 +7,7 @@ import { addCart } from "../redux/action";
 
 import { Footer, Navbar } from "../components";
 import { directus } from "../lib/directus";
-import { readItem } from "@directus/sdk";
+import { readItem, readItems } from "@directus/sdk";
 import getMedia from "../lib/getMedia";
 
 const Product = () => {
@@ -45,11 +45,26 @@ const Product = () => {
       console.log(data);
       setProduct(data);
       setLoading(false);
-      const response2 = await fetch(
-        `https://fakestoreapi.com/products/category/${data.category}`
+
+      // Fetch similar products from the same category
+      const categoryId = data.category[0].category_id.id;
+      const similarProductsData = await directus.request(
+        readItems("products", {
+          filter: {
+            category: {
+              category_id: {
+                _eq: categoryId,
+              },
+            },
+            id: {
+              _neq: id, // Exclude the current product
+            },
+          },
+          fields: ["*"],
+        })
       );
-      const data2 = await response2.json();
-      setSimilarProducts(data2);
+
+      setSimilarProducts(similarProductsData);
       setLoading2(false);
     };
     getProduct();
@@ -81,23 +96,27 @@ const Product = () => {
   const ShowProduct = () => {
     return (
       <>
-        <div className="container my-5 py-2">
+        <div className="container my-2 py-2">
           <div className="row">
             <div className="col-md-6 col-sm-12 py-3">
               <img
                 className="img-fluid"
                 src={getMedia(product.image)}
                 alt={product.title}
-                width="400px"
-                height="400px"
+                width="500px"
+                height="500px"
               />
             </div>
             <div className="col-md-6 col-md-6 py-5">
-              {/* <h4 className="text-uppercase text-muted">
-                Categories:{" "}
-                {product.category.map((cat) => cat.category_id.name).join(", ")}
-              </h4> */}
               <h1 className="display-5">{product.product_name}</h1>
+              <p className="text-uppercase text-muted">
+                Categories:{" "}
+                {product.category
+                  ? product.category
+                      .map((cat) => cat.category_id.name)
+                      .join(", ")
+                  : "No categories available"}
+              </p>
               <h3 className="display-6  my-4">${product.price}</h3>
               <button
                 className="btn btn-outline-dark"
@@ -152,19 +171,16 @@ const Product = () => {
                 <div key={item.id} className="card mx-4 text-center">
                   <img
                     className="card-img-top p-3"
-                    src={item.image}
+                    src={getMedia(item.image)}
                     alt="Card"
                     height={300}
                     width={300}
                   />
                   <div className="card-body">
                     <h5 className="card-title">
-                      {item.title.substring(0, 15)}...
+                      {item.product_name.substring(0, 15)}...
                     </h5>
                   </div>
-                  {/* <ul className="list-group list-group-flush">
-                    <li className="list-group-item lead">${product.price}</li>
-                  </ul> */}
                   <div className="card-body">
                     <Link
                       to={"/product/" + item.id}
@@ -187,6 +203,7 @@ const Product = () => {
       </>
     );
   };
+
   return (
     <>
       <Navbar />
