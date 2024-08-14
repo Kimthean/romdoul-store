@@ -1,14 +1,13 @@
 import React, { useEffect, useState } from "react";
 import Skeleton from "react-loading-skeleton";
 import { Link, useParams } from "react-router-dom";
-import { useDispatch } from "react-redux";
-import { addCart } from "../redux/action";
-
 import { Footer, Navbar } from "../components";
 import { directus } from "../lib/directus";
 import { readItem, readItems } from "@directus/sdk";
 import getMedia from "../lib/getMedia";
 import ProductCard from "../components/ProductCard";
+import { useAtom } from "jotai";
+import { cartAtom } from "../lib/atom";
 
 const Product = () => {
   const { id } = useParams();
@@ -18,10 +17,18 @@ const Product = () => {
   const [loading2, setLoading2] = useState(false);
   const [isDescriptionExpanded, setDescriptionExpanded] = useState(false);
 
-  const dispatch = useDispatch();
+  const [, setCart] = useAtom(cartAtom);
 
   const addProduct = (product) => {
-    dispatch(addCart(product));
+    setCart((prevCart) => {
+      const existingItem = prevCart.find((item) => item.id === product.id);
+      if (existingItem) {
+        return prevCart.map((item) =>
+          item.id === product.id ? { ...item, qty: item.qty + 1 } : item
+        );
+      }
+      return [...prevCart, { ...product, qty: 1 }];
+    });
   };
 
   useEffect(() => {
