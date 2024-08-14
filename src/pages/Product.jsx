@@ -71,7 +71,6 @@ const Product = () => {
           ],
         })
       );
-      console.log(similarProductsData);
       setSimilarProducts(similarProductsData);
       setLoading2(false);
     };

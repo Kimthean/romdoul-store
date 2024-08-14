@@ -35,7 +35,7 @@ const Cart = () => {
           alt={item.product_name}
         />
       </div>
-      <div className="col-md-3 col-lg-3 col-xl-3">
+      <div className="col-md-3 col-lg-3 col-xl-3 py-2">
         <h6 className="text-muted">{item.category[0].category_id.name}</h6>
         <h6 className="text-black mb-0">{item.product_name}</h6>
       </div>
@@ -53,15 +53,10 @@ const Cart = () => {
           <i className="fas fa-plus"></i>
         </button>
       </div>
-      <div className="col-md-3 col-lg-2 col-xl-2 offset-lg-1">
+      <div className="col-md-3 col-lg-2 col-xl-2 offset-lg-1 py-2">
         <h6 className="mb-0">
           ${parseFloat(item.price.replace(",", "")) * item.qty}
         </h6>
-      </div>
-      <div className="col-md-1 col-lg-1 col-xl-1 text-end">
-        <a href="#!" className="text-muted">
-          <i className="fas fa-times"></i>
-        </a>
       </div>
     </div>
   );

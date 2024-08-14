@@ -28,7 +28,6 @@ const Checkout = () => {
       0
     );
     const shipping = 30.0;
-    const totalItems = state.reduce((acc, item) => acc + item.qty, 0);
 
     const OrderSummary = () => (
       <div className="card border-0 shadow-sm">
