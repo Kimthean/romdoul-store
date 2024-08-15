@@ -11,6 +11,7 @@ import { cartAtom } from "../lib/atom";
 
 const Product = () => {
   const { id } = useParams();
+
   const [product, setProduct] = useState([]);
   const [similarProducts, setSimilarProducts] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -138,6 +139,7 @@ const Product = () => {
                 {product.category
                   ? product.category
                       .map((cat) => cat.category_id.name)
+                      .filter((name) => name)
                       .join(", ")
                   : "No categories available"}
               </p>
@@ -213,19 +215,23 @@ const Product = () => {
       </>
     );
   };
-
+  console.log(similarProducts);
   return (
     <>
       <Navbar />
       <div className="container">
         <div className="row">{loading ? <Loading /> : <ShowProduct />}</div>
         <div className="row my-5 py-5">
-          <div>
-            <h2>You may also Like</h2>
-            <div className="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 pt-4">
-              {loading2 ? <Loading2 /> : <ShowSimilarProduct />}
+          {similarProducts.length === 0 ? (
+            <></>
+          ) : (
+            <div>
+              <h2>You may also Like</h2>
+              <div className="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 pt-4">
+                {loading2 ? <Loading2 /> : <ShowSimilarProduct />}
+              </div>
             </div>
-          </div>
+          )}
         </div>
       </div>
       <Footer />
