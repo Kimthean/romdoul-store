@@ -3,10 +3,11 @@ import { Footer, Navbar } from "../components";
 
 const AboutPage = () => {
   const participants = [
-    "John Doe",
-    "Jane Smith",
-    "Michael Johnson",
-    "Emily Brown",
+    "Kea Kimthean",
+    "Sreunh Phleng",
+    "Sorn SokChanthy",
+    "Pol SokunThea",
+    "Seam Mai",
   ];
 
   return (
@@ -57,7 +58,7 @@ const AboutPage = () => {
 
         <div className="row mt-5">
           <div className="col">
-            <div className="card bg-light">
+            <div className="card">
               <div className="card-body">
                 <h3 className="card-title text-center mb-4">
                   Project Highlights
@@ -67,7 +68,8 @@ const AboutPage = () => {
                     ✅ Responsive design for optimal viewing on all devices
                   </li>
                   <li className="mb-3">
-                    ✅ Implementation of modern React and Bootstrap technologies
+                    ✅ Implementation of modern React and Bootstrap and Headless
+                    CMS for content management
                   </li>
                   <li className="mb-3">
                     ✅ Focus on user experience and intuitive navigation
