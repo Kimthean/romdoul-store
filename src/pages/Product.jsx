@@ -215,7 +215,7 @@ const Product = () => {
       </>
     );
   };
-  console.log(similarProducts);
+
   return (
     <>
       <Navbar />
