@@ -151,17 +151,23 @@ const Product = () => {
               <Link to="/cart" className="btn btn-dark mx-3">
                 Go to Cart
               </Link>
-              <p
-                dangerouslySetInnerHTML={{ __html: description }}
-                className="pt-4"
-              ></p>
-              <button
-                onClick={toggleDescription}
-                type="button"
-                className="btn btn-light"
-              >
-                {isDescriptionExpanded ? "Show Less" : "Show More"}
-              </button>
+              {description ? (
+                <>
+                  <p
+                    dangerouslySetInnerHTML={{ __html: description }}
+                    className="pt-4"
+                  ></p>
+                  <button
+                    onClick={toggleDescription}
+                    type="button"
+                    className="btn btn-light"
+                  >
+                    {isDescriptionExpanded ? "Show Less" : "Show More"}
+                  </button>
+                </>
+              ) : (
+                <></>
+              )}
             </div>
           </div>
         </div>

@@ -28,7 +28,10 @@ const ProductCard = ({ product, addToCart }) => {
         <div className="card-body">
           <h5 className="card-title">{product.product_name}</h5>
           <p className="card-text text-muted">
-            {product.category.map((cat) => cat.category_id.name).join(", ")}
+            {product.category
+              .map((cat) => cat.category_id?.name)
+              .filter((name) => name)
+              .join(", ")}
           </p>
           <div className="d-flex justify-content-between align-items-center">
             <span className="h5">${product.price}</span>
