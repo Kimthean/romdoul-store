@@ -7,11 +7,9 @@ import { readItems } from "@directus/sdk";
 import ProductCard from "./ProductCard";
 import { cartAtom } from "../lib/atom";
 
-const Products = () => {
+const LatestProducts = () => {
   const [data, setData] = useState([]);
-  const [filter, setFilter] = useState(data);
   const [loading, setLoading] = useState(false);
-  const [categories, setCategories] = useState([]);
   const [, setCart] = useAtom(cartAtom);
 
   const addProduct = (product) => {
@@ -19,7 +17,7 @@ const Products = () => {
       const existingItem = prevCart.find((item) => item.id === product.id);
       if (existingItem) {
         return prevCart.map((item) =>
-          item.id === product.id ? { ...item, qty: item.qty + 1 } : item
+          item.id === product.id ? { ...item, qty: item.qty + 1 } : item,
         );
       }
       return [...prevCart, { ...product, qty: 1 }];
@@ -43,11 +41,12 @@ const Products = () => {
               ],
             },
           ],
-        })
+          sort: ["date_updated"],
+          limit: 10,
+        }),
       );
       if (componentMounted) {
         setData(products);
-        setFilter(products);
         setLoading(false);
       }
       return () => {
@@ -55,19 +54,7 @@ const Products = () => {
       };
     };
 
-    const getCategories = async () => {
-      const categories = await directus.request(
-        readItems("category", {
-          fields: ["*"],
-        })
-      );
-      if (componentMounted) {
-        setCategories(categories);
-      }
-    };
-
     getProduct();
-    getCategories();
   }, []);
 
   const Loading = () => {
@@ -77,15 +64,6 @@ const Products = () => {
           <div className="row">
             <div className="col-12">
               <Skeleton height={40} width={200} className="mb-4" />
-            </div>
-          </div>
-          <div className="row mb-4">
-            <div className="col-12">
-              <div className="d-flex flex-wrap justify-content-center">
-                {[1, 2, 3, 4, 5].map((n) => (
-                  <Skeleton key={n} width={80} height={38} className="m-2" />
-                ))}
-              </div>
             </div>
           </div>
           <div className="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
@@ -100,13 +78,6 @@ const Products = () => {
     );
   };
 
-  const filterProduct = (catName) => {
-    const updatedList = data.filter((item) =>
-      item.category.some((cat) => cat.category_id.name === catName)
-    );
-    setFilter(updatedList);
-  };
-
   const ShowProducts = () => {
     return (
       <>
@@ -116,29 +87,8 @@ const Products = () => {
               <h2 className="mb-4">Latest Products</h2>
             </div>
           </div>
-          <div className="row mb-4">
-            <div className="col-12">
-              <div className="d-flex flex-wrap justify-content-center">
-                <button
-                  className="btn btn-outline-dark btn-sm m-2"
-                  onClick={() => setFilter(data)}
-                >
-                  All
-                </button>
-                {categories.map((category) => (
-                  <button
-                    key={category.id}
-                    className="btn btn-outline-dark btn-sm m-2"
-                    onClick={() => filterProduct(category.name)}
-                  >
-                    {category.name}
-                  </button>
-                ))}
-              </div>
-            </div>
-          </div>
-          <div className="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
-            {filter.map((product) => (
+          <div className="row row-cols-2 row-cols-md-3 row-cols-lg-4 g-2 g-md-3 g-lg-4">
+            {data.map((product) => (
               <ProductCard
                 key={product.id}
                 product={product}
@@ -160,4 +110,4 @@ const Products = () => {
   );
 };
 
-export default Products;
+export default LatestProducts;

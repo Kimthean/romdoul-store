@@ -1,58 +1,118 @@
 @media (min-width: 992px) {
-  .navbar {
-    height: 80px;
-  }
+    .navbar {
+        height: 80px;
+    }
 }
 @media (min-width: 1200px) {
-  .hero {
-    height: 750px;
-    object-fit: cover;
-  }
+    .hero {
+        height: 750px;
+        object-fit: cover;
+    }
 }
 
 @media (max-width: 767px) {
-  .nav-logo {
-    width: 60px;
-  }
+    .nav-logo {
+        width: 60px;
+    }
 }
 
 .product-card {
-  transition: all 0.3s ease;
+    transition: all 0.3s ease;
 }
 
 .image-container {
-  position: relative;
-  overflow: hidden;
+    position: relative;
+    overflow: hidden;
 }
 
 .card-img-top {
-  object-fit: cover;
-  transition: transform 0.3s ease;
+    object-fit: cover;
+    transition: transform 0.3s ease;
 }
 
 .overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  opacity: 0;
-  transition: opacity 0.3s ease;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
 }
 
 .card {
-  border: none;
-  border-radius: 10px;
+    border: none;
+    border-radius: 10px;
 }
 
 .btn-outline-secondary {
-  border-color: #ced4da;
+    border-color: #ced4da;
 }
 
 .text-muted {
-  font-size: 0.875rem;
+    font-size: 0.875rem;
 }
+
+/* .filter-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.search-container {
+    flex-grow: 1;
+    position: relative;
+    min-width: 200px;
+}
+
+.search-icon {
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #6c757d;
+}
+
+.search-input {
+    width: 100%;
+    padding: 10px 10px 10px 35px;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    font-size: 16px;
+}
+
+.search-input:focus {
+    outline: none;
+    border-color: #80bdff;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+.filter-select {
+    padding: 10px;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    font-size: 16px;
+    min-width: 150px;
+}
+
+.filter-select:focus {
+    outline: none;
+    border-color: #80bdff;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+@media (max-width: 768px) {
+    .filter-container {
+        flex-direction: column;
+    }
+
+    .search-container,
+    .filter-select {
+        width: 100%;
+    }
+} */
