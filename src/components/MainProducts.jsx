@@ -6,7 +6,7 @@ import { directus } from "../lib/directus";
 import { readItems } from "@directus/sdk";
 import ProductCard from "./ProductCard";
 import { cartAtom } from "../lib/atom";
-import { FaSearch, FaFilter } from "react-icons/fa";
+import { FaSearch } from "react-icons/fa";
 
 const MainProducts = () => {
   const [data, setData] = useState([]);
@@ -19,7 +19,6 @@ const MainProducts = () => {
   const [priceRange, setPriceRange] = useState({ min: 0, max: Infinity });
   const [sortBy, setSortBy] = useState("name");
   const [sortOrder, setSortOrder] = useState("asc");
-  const [showFilters, setShowFilters] = useState(false);
   const [, setCart] = useAtom(cartAtom);
 
   const searchInputRef = useRef(null);
@@ -158,16 +157,18 @@ const MainProducts = () => {
     setSearchQuery(searchQuery);
   };
 
+  const onKeyDown = (e) => {
+    if (e.key === "Enter") {
+      handleSearch();
+    }
+  };
+
   const handlePriceRangeChange = (e) => {
     const { name, value } = e.target;
     setPriceRange((prev) => ({
       ...prev,
       [name]: value ? parseFloat(value) : name === "min" ? 0 : Infinity,
     }));
-  };
-
-  const toggleFilters = () => {
-    setShowFilters(!showFilters);
   };
 
   const Loading = () => {
@@ -209,41 +210,30 @@ const MainProducts = () => {
               <h2 className="mb-4">Products</h2>
             </div>
           </div>
-          <div className="row mb-4">
-            <div className="col-12">
-              <div className="filter-container d-flex justify-content-between align-items-center">
-                <div className="search-container d-flex">
-                  <div className="input-group">
-                    <span className="input-group-text">
-                      <FaSearch />
-                    </span>
-                    <input
-                      type="text"
-                      className="form-control"
-                      placeholder="Search products..."
-                      ref={searchInputRef}
-                    />
-                    <button
-                      className="btn btn-outline-secondary"
-                      type="button"
-                      onClick={handleSearch}
-                    >
-                      Search
-                    </button>
-                  </div>
-                </div>
+          <div className="filter-container">
+            <div className="search-container">
+              <div className="input-group">
+                <span className="input-group-text">
+                  <FaSearch />
+                </span>
+                <input
+                  type="text"
+                  className="form-control search-input"
+                  placeholder="Search products..."
+                  ref={searchInputRef}
+                  onKeyDown={onKeyDown}
+                />
                 <button
-                  className="btn btn-outline-secondary"
-                  onClick={toggleFilters}
+                  className="btn btn-search"
+                  type="button"
+                  onClick={handleSearch}
                 >
-                  <FaFilter /> Filters
+                  Search
                 </button>
               </div>
             </div>
-          </div>
-          {showFilters && (
-            <div className="row mb-4">
-              <div className="col-md-3 mb-3">
+            <div className="filter-row">
+              <div className="filter-item">
                 <select
                   className="form-select"
                   value={selectedCategory}
@@ -257,7 +247,7 @@ const MainProducts = () => {
                   ))}
                 </select>
               </div>
-              <div className="col-md-3 mb-3">
+              <div className="filter-item">
                 <select
                   className="form-select"
                   value={selectedBrand}
@@ -271,8 +261,8 @@ const MainProducts = () => {
                   ))}
                 </select>
               </div>
-              <div className="col-md-3 mb-3">
-                <div className="input-group">
+              <div className="filter-item">
+                <div className="price-range">
                   <input
                     type="number"
                     className="form-control"
@@ -291,7 +281,7 @@ const MainProducts = () => {
                   />
                 </div>
               </div>
-              <div className="col-md-3 mb-3">
+              <div className="filter-item">
                 <select
                   className="form-select"
                   value={`${sortBy}-${sortOrder}`}
@@ -308,7 +298,7 @@ const MainProducts = () => {
                 </select>
               </div>
             </div>
-          )}
+          </div>
           <div className="row row-cols-2 row-cols-md-3 row-cols-lg-4 g-2 g-md-3 g-lg-4">
             {filteredAndSortedProducts.map((product) => (
               <ProductCard

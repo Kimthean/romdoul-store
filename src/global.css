@@ -30,20 +30,6 @@
     transition: transform 0.3s ease;
 }
 
-.overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: rgba(0, 0, 0, 0.5);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    opacity: 0;
-    transition: opacity 0.3s ease;
-}
-
 .card {
     border: none;
     border-radius: 10px;
@@ -57,62 +43,69 @@
     font-size: 0.875rem;
 }
 
-/* .filter-container {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 15px;
+.filter-container {
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    padding: 20px;
     margin-bottom: 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .search-container {
-    flex-grow: 1;
-    position: relative;
-    min-width: 200px;
-}
-
-.search-icon {
-    position: absolute;
-    left: 10px;
-    top: 50%;
-    transform: translateY(-50%);
-    color: #6c757d;
+    margin-bottom: 20px;
 }
 
 .search-input {
-    width: 100%;
-    padding: 10px 10px 10px 35px;
-    border: 1px solid #ced4da;
-    border-radius: 4px;
-    font-size: 16px;
+    border-right: none;
 }
 
 .search-input:focus {
-    outline: none;
-    border-color: #80bdff;
-    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+    box-shadow: none;
 }
 
-.filter-select {
-    padding: 10px;
-    border: 1px solid #ced4da;
+.input-group-text {
+    background-color: #fff;
+    border-right: none;
+}
+
+.btn-search {
+    background-color: #007bff;
+    color: #fff;
+    border-color: #007bff;
+}
+
+.btn-search:hover {
+    background-color: #0056b3;
+    border-color: #0056b3;
+}
+
+.filter-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.filter-item {
+    flex: 1;
+    min-width: 200px;
+}
+
+.form-select,
+.form-control {
     border-radius: 4px;
-    font-size: 16px;
-    min-width: 150px;
 }
 
-.filter-select:focus {
-    outline: none;
-    border-color: #80bdff;
-    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+.price-range {
+    display: flex;
+    gap: 10px;
+}
+
+.price-range input {
+    flex: 1;
 }
 
 @media (max-width: 768px) {
-    .filter-container {
-        flex-direction: column;
+    .filter-item {
+        flex-basis: 100%;
     }
-
-    .search-container,
-    .filter-select {
-        width: 100%;
-    }
-} */
+}
