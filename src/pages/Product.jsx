@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import Skeleton from "react-loading-skeleton";
 import { Link, useParams } from "react-router-dom";
 import { Footer, Navbar } from "../components";
@@ -20,17 +20,20 @@ const Product = () => {
 
   const [, setCart] = useAtom(cartAtom);
 
-  const addProduct = (product) => {
-    setCart((prevCart) => {
-      const existingItem = prevCart.find((item) => item.id === product.id);
-      if (existingItem) {
-        return prevCart.map((item) =>
-          item.id === product.id ? { ...item, qty: item.qty + 1 } : item
-        );
-      }
-      return [...prevCart, { ...product, qty: 1 }];
-    });
-  };
+  const addProduct = useCallback(
+    (product) => {
+      setCart((prevCart) => {
+        const existingItem = prevCart.find((item) => item.id === product.id);
+        if (existingItem) {
+          return prevCart.map((item) =>
+            item.id === product.id ? { ...item, qty: item.qty + 1 } : item
+          );
+        }
+        return [...prevCart, { ...product, qty: 1 }];
+      });
+    },
+    [setCart]
+  );
 
   useEffect(() => {
     const getProduct = async () => {
