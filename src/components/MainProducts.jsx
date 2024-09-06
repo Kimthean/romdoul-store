@@ -1,4 +1,5 @@
-import React, { useState, useEffect, useMemo, useRef } from "react";
+import React, { useState, useMemo, useRef } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { useAtom } from "jotai";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
@@ -8,11 +9,44 @@ import ProductCard from "./ProductCard";
 import { cartAtom } from "../lib/atom";
 import { FaSearch } from "react-icons/fa";
 
+const fetchProducts = async () => {
+  const products = await directus.request(
+    readItems("products", {
+      fields: [
+        "*",
+        {
+          category: [
+            {
+              category_id: ["*"],
+            },
+          ],
+          brand: ["*"],
+        },
+      ],
+    })
+  );
+  return products;
+};
+
+const fetchCategories = async () => {
+  const categories = await directus.request(
+    readItems("category", {
+      fields: ["*"],
+    })
+  );
+  return categories;
+};
+
+const fetchBrands = async () => {
+  const brands = await directus.request(
+    readItems("brand", {
+      fields: ["*"],
+    })
+  );
+  return brands;
+};
+
 const MainProducts = () => {
-  const [data, setData] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [categories, setCategories] = useState([]);
-  const [brands, setBrands] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
   const [selectedBrand, setSelectedBrand] = useState("");
@@ -23,88 +57,49 @@ const MainProducts = () => {
 
   const searchInputRef = useRef(null);
 
+  const { data: products, isLoading: productsLoading } = useQuery({
+    queryKey: ["products"],
+    queryFn: fetchProducts,
+  });
+
+  const { data: categories, isLoading: categoriesLoading } = useQuery({
+    queryKey: ["categories"],
+    queryFn: fetchCategories,
+  });
+
+  const { data: brands, isLoading: brandsLoading } = useQuery({
+    queryKey: ["brands"],
+    queryFn: fetchBrands,
+  });
+
+  const isLoading = productsLoading || categoriesLoading || brandsLoading;
+
   const addProduct = (product) => {
     setCart((prevCart) => {
       const existingItem = prevCart.find((item) => item.id === product.id);
       if (existingItem) {
         return prevCart.map((item) =>
-          item.id === product.id ? { ...item, qty: item.qty + 1 } : item,
+          item.id === product.id ? { ...item, qty: item.qty + 1 } : item
         );
       }
       return [...prevCart, { ...product, qty: 1 }];
     });
   };
 
-  useEffect(() => {
-    let componentMounted = true;
-
-    const getProduct = async () => {
-      setLoading(true);
-      const products = await directus.request(
-        readItems("products", {
-          fields: [
-            "*",
-            {
-              category: [
-                {
-                  category_id: ["*"],
-                },
-              ],
-              brand: ["*"],
-            },
-          ],
-        }),
-      );
-
-      if (componentMounted) {
-        setData(products);
-        setLoading(false);
-      }
-    };
-
-    const getCategories = async () => {
-      const categories = await directus.request(
-        readItems("category", {
-          fields: ["*"],
-        }),
-      );
-      if (componentMounted) {
-        setCategories(categories);
-      }
-    };
-
-    const getBrands = async () => {
-      const brands = await directus.request(
-        readItems("brand", {
-          fields: ["*"],
-        }),
-      );
-      if (componentMounted) {
-        setBrands(brands);
-      }
-    };
-
-    getProduct();
-    getCategories();
-    getBrands();
-
-    return () => {
-      componentMounted = false;
-    };
-  }, []);
-
   const filteredAndSortedProducts = useMemo(() => {
-    let result = data;
+    if (!products) return [];
+
+    let result = products;
 
     if (selectedCategory) {
       result = result.filter((item) =>
-        item.category.some((cat) => cat.category_id.name === selectedCategory),
+        item.category.some((cat) => cat.category_id.name === selectedCategory)
       );
     }
 
     if (selectedBrand) {
       result = result.filter(
-        (item) => item.brand && item.brand.name === selectedBrand,
+        (item) => item.brand && item.brand.name === selectedBrand
       );
     }
 
@@ -125,7 +120,7 @@ const MainProducts = () => {
         (item) =>
           item.product_name.toLowerCase().includes(lowercaseQuery) ||
           (item.description &&
-            item.description.toLowerCase().includes(lowercaseQuery)),
+            item.description.toLowerCase().includes(lowercaseQuery))
       );
     }
 
@@ -143,7 +138,7 @@ const MainProducts = () => {
 
     return result;
   }, [
-    data,
+    products,
     selectedCategory,
     selectedBrand,
     priceRange,
@@ -240,7 +235,7 @@ const MainProducts = () => {
                   onChange={(e) => setSelectedCategory(e.target.value)}
                 >
                   <option value="">All Categories</option>
-                  {categories.map((category) => (
+                  {categories?.map((category) => (
                     <option key={category.id} value={category.name}>
                       {category.name}
                     </option>
@@ -254,7 +249,7 @@ const MainProducts = () => {
                   onChange={(e) => setSelectedBrand(e.target.value)}
                 >
                   <option value="">All Brands</option>
-                  {brands.map((brand) => (
+                  {brands?.map((brand) => (
                     <option key={brand.id} value={brand.name}>
                       {brand.name}
                     </option>
@@ -315,7 +310,7 @@ const MainProducts = () => {
 
   return (
     <div className="container my-5">
-      {loading ? <Loading /> : <ShowProducts />}
+      {isLoading ? <Loading /> : <ShowProducts />}
     </div>
   );
 };

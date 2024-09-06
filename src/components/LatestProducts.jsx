@@ -1,15 +1,60 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
+import { useQuery } from "@tanstack/react-query";
 import { useAtom } from "jotai";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
-import { directus } from "../lib/directus";
-import { readItems } from "@directus/sdk";
 import ProductCard from "./ProductCard";
 import { cartAtom } from "../lib/atom";
+import { directus } from "../lib/directus";
+import { readItems } from "@directus/sdk";
+
+const fetchProducts = async () => {
+  const products = await directus.request(
+    readItems("products", {
+      fields: [
+        "*",
+        {
+          category: [
+            {
+              category_id: ["*"],
+            },
+          ],
+        },
+      ],
+      sort: ["date_updated"],
+      limit: 10,
+    })
+  );
+  return products;
+};
+
+const Loading = () => {
+  return (
+    <>
+      <div className="container">
+        <div className="row">
+          <div className="col-12">
+            <Skeleton height={40} width={200} className="mb-4" />
+          </div>
+        </div>
+        <div className="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+          {[1, 2, 3, 4, 5, 6].map((n) => (
+            <div key={n} className="col">
+              <Skeleton height={500} />
+            </div>
+          ))}
+        </div>
+      </div>
+    </>
+  );
+};
 
 const LatestProducts = () => {
-  const [data, setData] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const { data, isLoading, error } = useQuery({
+    queryKey: ["latestProducts"],
+    queryFn: fetchProducts,
+  });
+
   const [, setCart] = useAtom(cartAtom);
 
   const addProduct = (product) => {
@@ -17,66 +62,24 @@ const LatestProducts = () => {
       const existingItem = prevCart.find((item) => item.id === product.id);
       if (existingItem) {
         return prevCart.map((item) =>
-          item.id === product.id ? { ...item, qty: item.qty + 1 } : item,
+          item.id === product.id ? { ...item, qty: item.qty + 1 } : item
         );
       }
       return [...prevCart, { ...product, qty: 1 }];
     });
   };
 
-  useEffect(() => {
-    let componentMounted = true;
-
-    const getProduct = async () => {
-      setLoading(true);
-      const products = await directus.request(
-        readItems("products", {
-          fields: [
-            "*",
-            {
-              category: [
-                {
-                  category_id: ["*"],
-                },
-              ],
-            },
-          ],
-          sort: ["date_updated"],
-          limit: 10,
-        }),
-      );
-      if (componentMounted) {
-        setData(products);
-        setLoading(false);
-      }
-      return () => {
-        componentMounted = false;
-      };
-    };
-
-    getProduct();
-  }, []);
-
-  const Loading = () => {
+  if (isLoading) {
     return (
-      <>
-        <div className="container">
-          <div className="row">
-            <div className="col-12">
-              <Skeleton height={40} width={200} className="mb-4" />
-            </div>
-          </div>
-          <div className="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
-            {[1, 2, 3, 4, 5, 6].map((n) => (
-              <div key={n} className="col">
-                <Skeleton height={500} />
-              </div>
-            ))}
-          </div>
-        </div>
-      </>
+      <div className="container my-5">
+        <Loading />
+      </div>
     );
-  };
+  }
+
+  if (error) {
+    return <div>Error: {error.message}</div>;
+  }
 
   const ShowProducts = () => {
     return (
@@ -92,7 +95,7 @@ const LatestProducts = () => {
               <ProductCard
                 key={product.id}
                 product={product}
-                addToCart={addProduct}
+                addToCart={() => addProduct(product)}
               />
             ))}
           </div>
@@ -102,11 +105,9 @@ const LatestProducts = () => {
   };
 
   return (
-    <>
-      <div className="container my-5">
-        {loading ? <Loading /> : <ShowProducts />}
-      </div>
-    </>
+    <div className="container my-5">
+      <ShowProducts />
+    </div>
   );
 };
 

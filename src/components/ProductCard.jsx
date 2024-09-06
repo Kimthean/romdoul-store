@@ -1,15 +1,8 @@
-import React, { useState } from "react";
+import React from "react";
 import { Link } from "react-router-dom";
 import getMedia from "../lib/getMedia";
-import Skeleton from "react-loading-skeleton";
 
 const ProductCard = ({ product, addToCart }) => {
-  const [imageLoaded, setImageLoaded] = useState(false);
-
-  const handleImageLoad = () => {
-    setImageLoaded(true);
-  };
-
   return (
     <div className="col">
       <div className="card h-100 shadow">
@@ -17,17 +10,10 @@ const ProductCard = ({ product, addToCart }) => {
           className="card-img-container position-relative"
           style={{ paddingTop: "100%" }}
         >
-          {!imageLoaded && (
-            <div className="position-absolute top-0 start-0 w-100 h-100">
-              <Skeleton height="100%" baseColor="white" />
-            </div>
-          )}
           <img
-            className={`card-img-top position-absolute top-0 start-0 w-80 h-100 object-fit-cover ${imageLoaded ? "loaded" : ""}`}
             src={getMedia(product.image)}
-            alt={product.product_name}
-            onLoad={handleImageLoad}
-            style={{ display: imageLoaded ? "block" : "none" }}
+            alt=""
+            className="card-img-top position-absolute top-0 start-0 w-80 h-100 object-fit-cover"
           />
         </div>
         <div className="card-body d-flex flex-column">
@@ -49,6 +35,7 @@ const ProductCard = ({ product, addToCart }) => {
               </button>
               <Link
                 to={"/product/" + product.id}
+                onClick={() => window.scrollTo(0, 0)}
                 className="btn btn-dark btn-sm flex-grow-1"
               >
                 View

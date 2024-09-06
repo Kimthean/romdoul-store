@@ -5,10 +5,7 @@ import { cartAtom } from "../lib/atom";
 
 const Navbar = () => {
   const [cart] = useAtom(cartAtom);
-  const cartCount = useMemo(
-    () => cart.reduce((total, item) => total + item.qty, 0),
-    [cart]
-  );
+  const cartCount = cart.reduce((total, item) => total + item.qty, 0);
 
   return (
     <nav className="navbar navbar-expand-lg navbar-light bg-light sticky-top">
@@ -58,7 +55,7 @@ const Navbar = () => {
             </li>
           </ul>
           <div className="buttons text-center">
-            <NavLink to="/cart" className="btn btn-outline-dark m-2">
+            <NavLink to="/cart" className="btn btn-outline-dark m-4">
               <i className="fa fa-cart-shopping mr-1"></i> Cart ({cartCount})
             </NavLink>
           </div>

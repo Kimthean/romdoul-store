@@ -1,6 +1,7 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import Skeleton from "react-loading-skeleton";
 import { Link, useParams } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
 import { Footer, Navbar } from "../components";
 import { directus } from "../lib/directus";
 import { readItem, readItems } from "@directus/sdk";
@@ -9,13 +10,72 @@ import ProductCard from "../components/ProductCard";
 import { useAtom } from "jotai";
 import { cartAtom } from "../lib/atom";
 
+const fetchProduct = async ({ queryKey }) => {
+  const [, id] = queryKey;
+  const data = await directus.request(
+    readItem("products", id, {
+      fields: [
+        "*",
+        {
+          category: [
+            {
+              category_id: ["*"],
+            },
+          ],
+        },
+      ],
+    })
+  );
+  return data;
+};
+
+const fetchSimilarProducts = async ({ queryKey }) => {
+  const [, categoryId, id] = queryKey;
+  const similarProductsData = await directus.request(
+    readItems("products", {
+      filter: {
+        category: {
+          category_id: {
+            _eq: categoryId,
+          },
+        },
+        id: {
+          _neq: id,
+        },
+      },
+      fields: [
+        "*",
+        {
+          category: [
+            {
+              category_id: ["*"],
+            },
+          ],
+        },
+      ],
+    })
+  );
+  return similarProductsData;
+};
+
 const Product = () => {
   const { id } = useParams();
 
-  const [product, setProduct] = useState([]);
-  const [similarProducts, setSimilarProducts] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [loading2, setLoading2] = useState(false);
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
+  const { data: product, isLoading } = useQuery({
+    queryKey: ["product", id],
+    queryFn: fetchProduct,
+  });
+
+  const { data: similarProducts, isLoading: isLoadingSimilar } = useQuery({
+    queryKey: ["similarProducts", product?.category[0]?.category_id?.id, id],
+    queryFn: fetchSimilarProducts,
+    enabled: !!product?.category[0]?.category_id?.id,
+  });
+
   const [isDescriptionExpanded, setDescriptionExpanded] = useState(false);
 
   const [, setCart] = useAtom(cartAtom);
@@ -35,59 +95,6 @@ const Product = () => {
     [setCart]
   );
 
-  useEffect(() => {
-    const getProduct = async () => {
-      setLoading(true);
-      setLoading2(true);
-      const data = await directus.request(
-        readItem("products", id, {
-          fields: [
-            "*",
-            {
-              category: [
-                {
-                  category_id: ["*"],
-                },
-              ],
-            },
-          ],
-        })
-      );
-
-      setProduct(data);
-      setLoading(false);
-
-      const categoryId = data.category[0].category_id.id;
-      const similarProductsData = await directus.request(
-        readItems("products", {
-          filter: {
-            category: {
-              category_id: {
-                _eq: categoryId,
-              },
-            },
-            id: {
-              _neq: id,
-            },
-          },
-          fields: [
-            "*",
-            {
-              category: [
-                {
-                  category_id: ["*"],
-                },
-              ],
-            },
-          ],
-        })
-      );
-      setSimilarProducts(similarProductsData);
-      setLoading2(false);
-    };
-    getProduct();
-  }, [id]);
-
   const maxLength = 300;
 
   const toggleDescription = () => {
@@ -95,7 +102,7 @@ const Product = () => {
   };
 
   const description = isDescriptionExpanded
-    ? product.description
+    ? product?.description
     : product?.description?.substring(0, maxLength) + "...";
 
   const Loading = () => {
@@ -130,7 +137,7 @@ const Product = () => {
               <img
                 className="img-fluid"
                 src={getMedia(product.image)}
-                alt={product.title}
+                alt={product.product_name}
                 width="500px"
                 height="500px"
               />
@@ -180,7 +187,7 @@ const Product = () => {
     );
   };
 
-  const Loading2 = () => {
+  const LoadingSimilar = () => {
     return (
       <>
         <div className="my-4 py-4">
@@ -223,17 +230,17 @@ const Product = () => {
     <>
       <Navbar />
       <div className="container">
-        <div className="row">{loading ? <Loading /> : <ShowProduct />}</div>
+        <div className="row">{isLoading ? <Loading /> : <ShowProduct />}</div>
         <div className="row my-5 py-5">
-          {similarProducts.length === 0 ? (
-            <></>
-          ) : (
+          {similarProducts?.length > 0 ? (
             <div>
               <h2>You may also Like</h2>
               <div className="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 pt-4">
-                {loading2 ? <Loading2 /> : <ShowSimilarProduct />}
+                {isLoadingSimilar ? <LoadingSimilar /> : <ShowSimilarProduct />}
               </div>
             </div>
+          ) : (
+            <></>
           )}
         </div>
       </div>

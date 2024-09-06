@@ -1,6 +1,7 @@
 import { Navbar, Main, Footer } from "../components";
 import LatestProducts from "../components/LatestProducts";
 
+
 function Home() {
   return (
     <>
