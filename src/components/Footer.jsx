@@ -12,6 +12,28 @@ const Footer = () => {
               Discover quality products at competitive prices. Your one-stop
               shop for all your electronics needs.
             </p>
+            <div
+              style={{
+                fontSize: "1.5rem",
+              }}
+              className="mt-24"
+            >
+              <a href="#" className="text-light me-3">
+                <i className="fab fa-facebook-f font-bold"></i>
+              </a>
+              <a href="#" className="text-light me-3">
+                <i className="fab fa-twitter"></i>
+              </a>
+              <a href="#" className="text-light me-3">
+                <i className="fab fa-instagram"></i>
+              </a>
+              <a href="#" className="text-light me-3">
+                <i className="fab fa-linkedin"></i>
+              </a>
+              <a href="#" className="text-light me-3">
+                <i className="fab fa-youtube"></i>
+              </a>
+            </div>
           </div>
 
           <div className="col-lg-2 col-md-6 mb-4 mb-md-0">
