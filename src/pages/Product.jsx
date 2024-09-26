@@ -163,7 +163,7 @@ const Product = () => {
               <Link to="/cart" className="btn btn-dark mx-3">
                 Go to Cart
               </Link>
-              {description ? (
+              {product.description && (
                 <>
                   <p
                     dangerouslySetInnerHTML={{ __html: description }}
@@ -177,8 +177,6 @@ const Product = () => {
                     {isDescriptionExpanded ? "Show Less" : "Show More"}
                   </button>
                 </>
-              ) : (
-                <></>
               )}
             </div>
           </div>
